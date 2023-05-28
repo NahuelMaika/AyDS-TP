@@ -1,4 +1,4 @@
-package ayds.apolo.songinfo.home.model.repository
+package ayds.apolo.songinfo.home.model.repository.wikipedia
 
 import ayds.apolo.songinfo.home.model.entities.EmptySong
 import ayds.apolo.songinfo.home.model.entities.Song
@@ -6,22 +6,13 @@ import ayds.apolo.songinfo.home.model.entities.SpotifySong
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.io.IOException
 
 interface WikipediaService {
 
     fun getFromWikipediaService(term: String): Song
 }
-internal class WikipediaServiceImpl:WikipediaService{
-
-    var retrofit: Retrofit? = Retrofit.Builder()
-    .baseUrl("https://en.wikipedia.org/w/")
-    .addConverterFactory(ScalarsConverterFactory.create())
-    .build()
-
-    var wikipediaAPI = retrofit!!.create(WikipediaAPI::class.java)
+internal class WikipediaServiceImpl(private val wikipediaAPI: WikipediaAPI) : WikipediaService {
 
     override fun getFromWikipediaService(term: String): Song{
         val callResponse: Response<String>

@@ -7,12 +7,10 @@ import ayds.apolo.songinfo.home.model.repository.external.spotify.SpotifyTrackSe
 import ayds.apolo.songinfo.home.model.repository.local.spotify.SpotifyCacheStorage
 import ayds.apolo.songinfo.home.model.repository.local.spotify.SpotifyCacheStorageImpl
 import ayds.apolo.songinfo.home.model.repository.local.spotify.sqldb.SpotifySqlDBImpl
-import com.google.gson.Gson
-import com.google.gson.JsonObject
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.scalars.ScalarsConverterFactory
-import java.io.IOException
+import ayds.apolo.songinfo.home.model.repository.wikipedia.WikipediaModule
+import ayds.apolo.songinfo.home.model.repository.wikipedia.WikipediaService
+import ayds.apolo.songinfo.home.model.repository.wikipedia.WikipediaServiceImpl
+
 interface SongRepository{
     fun getSongByTerm(term: String): Song
 }
@@ -22,7 +20,7 @@ internal class SongRepositoryImpl(private val spotifySqlDBImpl:SpotifySqlDBImpl,
 :SongRepository {
 
     private val cache: SpotifyCacheStorage = SpotifyCacheStorageImpl()
-    private val wikipediaService: WikipediaService = WikipediaServiceImpl()
+    private val wikipediaService: WikipediaService = WikipediaModule.wikipediaService
 
    override fun getSongByTerm(term: String): Song {
         var song = cache.getFromCache(term)
@@ -30,13 +28,19 @@ internal class SongRepositoryImpl(private val spotifySqlDBImpl:SpotifySqlDBImpl,
         if(song == EmptySong){
             song = getFromDB(term)
 
-            if(song == EmptySong){
+            if(song != EmptySong){
                 cache.saveInCache(term, song as SpotifySong)
             }
         }
 
         if (song == EmptySong){
             song = getFromSpotifyService(term)
+
+            if(song != EmptySong) {
+                song as SpotifySong
+                song.isLocallyStored = true
+                cache.saveInCache(term, song)
+            }
         }
 
         if(song == EmptySong){
