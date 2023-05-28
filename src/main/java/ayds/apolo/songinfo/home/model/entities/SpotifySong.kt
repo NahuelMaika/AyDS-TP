@@ -1,6 +1,6 @@
 package ayds.apolo.songinfo.home.model.entities
 
-interface SearchResult
+interface Song
 data class SpotifySong(
   val id: String,
   val songName: String,
@@ -11,9 +11,9 @@ data class SpotifySong(
   val imageUrl: String,
   var isLocallyStored: Boolean = false,
   var isCacheStored: Boolean = false
-) : SearchResult {
+) : Song {
 
   val year: String = releaseDate.split("-").first()
 }
 
-object EmptySong : SearchResult
+object EmptySong : Song

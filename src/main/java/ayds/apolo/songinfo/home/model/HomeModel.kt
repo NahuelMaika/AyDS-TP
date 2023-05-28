@@ -1,11 +1,11 @@
 package ayds.apolo.songinfo.home.model
 
-import ayds.apolo.songinfo.home.model.entities.SearchResult
+import ayds.apolo.songinfo.home.model.entities.Song
 import ayds.apolo.songinfo.home.model.repository.SongRepository
 
 interface HomeModel {
 
-    fun searchSong(term: String): SearchResult
+    fun searchSong(term: String): Song
 }
 
 internal class HomeModelImpl(private val repository: SongRepository) : HomeModel {
